@@ -13,9 +13,6 @@ from monster import Monster
 # Import Magical Ally class
 from ally import Ally
 
-# ✅ Toggle this to False before submitting
-TEST_MODE = True
-
 # Print system information
 print(f"Operating System: {os.name}")
 print(f"Python Version: {platform.python_version()}")
@@ -89,9 +86,7 @@ input("Roll the dice for the monster's health points (Press enter)")
 m_health_points = random.choice(big_dice_options)
 print("    |    Player rolled " + str(m_health_points) + " health points for the monster")
 
-# ✅ Extend monster health for longer battle
-if TEST_MODE:
-    m_health_points = max(m_health_points, 25)
+
 
 print("    |", end="    ")
 input("Roll for first loot (enter)")
@@ -103,12 +98,6 @@ loot_options, belt = function.collect_loot(loot_options, belt)
 
 belt.sort()
 print("    |    Your belt: ", belt)
-
-# ✅ For test: guarantee King power can activate
-if TEST_MODE:
-    belt.append("King’s Will")
-    combat_strength = max(8, combat_strength)
-
 belt, health_points = function.use_loot(belt, health_points)
 
 print("    |", end="    ")
