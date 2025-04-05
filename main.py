@@ -10,8 +10,13 @@ import function
 from hero import Hero
 from monster import Monster
 
+
 # Import the Shop class from dynamic_shop.py instead of shop.py
 from dynamic_shop import DynamicItemShop
+
+# Import Magical Ally class
+from ally import Ally
+
 
 # Print system information
 print(f"Operating System: {os.name}")
@@ -21,7 +26,7 @@ print(f"Python Version: {platform.python_version()}")
 hero = Hero()
 monster = Monster()
 
-# Define two Dice
+# Define Dice
 small_dice_options = list(range(1, 7))
 big_dice_options = list(range(1, 21))
 
@@ -29,7 +34,10 @@ big_dice_options = list(range(1, 21))
 weapons = ["Fist", "Knife", "Club", "Gun", "Bomb", "Nuclear Bomb"]
 
 # Define the Loot
-loot_options = ["Health Potion", "Poison Potion", "Secret Note", "Leather Boots", "Flimsy Gloves"]
+loot_options = [
+    "Health Potion", "Poison Potion", "Secret Note", "Leather Boots",
+    "Flimsy Gloves", "King’s Will", "Emperor's Cape"
+]
 belt = []
 
 # Define the Monster's Powers
@@ -39,7 +47,6 @@ monster_powers = {
     "Super Hearing": 6
 }
 
-# Define the number of stars to award the player
 num_stars = 0
 
 # Create shop instance
@@ -54,42 +61,30 @@ current_location = "Wilderness"  # Starting location
 loot_value = 0
 
 # Loop to get valid input for Hero and Monster's Combat Strength
+
+# Input combat strength
+
 i = 0
 input_invalid = True
-
-while input_invalid and i in range(5):
+while input_invalid and i < 5:
     print("    ------------------------------------------------------------------")
     print("    |", end="    ")
     combat_strength = input("Enter your combat Strength (1-6): ")
     print("    |", end="    ")
     m_combat_strength = input("Enter the monster's combat Strength (1-6): ")
 
-    # Validate input: Check if the string inputted is numeric
-    if (not combat_strength.isnumeric()) or (not m_combat_strength.isnumeric()):
-        # If one of the inputs are invalid, print error message and halt
-        print("    |    One or more invalid inputs. Player needs to enter integer numbers for Combat Strength    |")
-        i = i + 1
+    if not combat_strength.isnumeric() or not m_combat_strength.isnumeric():
+        print("    |    Invalid input. Enter numbers.")
+        i += 1
         continue
 
-    # Note: Now safe to cast combat_strength to integer
-    # Validate input: Check if the string inputted
-    elif (int(combat_strength) not in range(1, 7)) or (int(m_combat_strength)) not in range(1, 7):
-        print("    |    Enter a valid integer between 1 and 6 only")
-        i = i + 1
-        continue
-
-    else:
-        input_invalid = False
-        break
-
-if not input_invalid:
-    input_invalid = False
     combat_strength = int(combat_strength)
     m_combat_strength = int(m_combat_strength)
     
     # Update hero's combat strength
     hero.combat_strength = combat_strength
     monster.combat_strength = m_combat_strength
+
 
     # Roll for weapon
     print("    |", end="    ")
@@ -151,12 +146,98 @@ if not input_invalid:
     
     # Update monster's health points
     monster.health_points = m_health_points
+=======
+    if 1 <= combat_strength <= 6 and 1 <= m_combat_strength <= 6:
+        input_invalid = False
+    else:
+        print("    |    Values must be between 1 and 6.")
+        i += 1
 
-    # Collect Loot
-    print("    ------------------------------------------------------------------")
-    print("    |    !!You find a loot bag!! You look inside to find 2 items:")
-    print("    |", end="    ")
-    input("Roll for first item (enter)")
+print("    |", end="    ")
+input("Roll the dice for your weapon (Press enter)")
+weapon_roll = random.choice(small_dice_options)
+combat_strength = min(6, combat_strength + weapon_roll)
+print("    |    The hero's weapon is " + str(weapons[weapon_roll - 1]))
+
+function.adjust_combat_strength(combat_strength, m_combat_strength)
+
+print("    |", end="    ")
+input("Roll the dice for your health points (Press enter)")
+health_points = random.choice(big_dice_options)
+print("    |    Player rolled " + str(health_points) + " health points")
+
+print("    |", end="    ")
+input("Roll the dice for the monster's health points (Press enter)")
+m_health_points = random.choice(big_dice_options)
+print("    |    Player rolled " + str(m_health_points) + " health points for the monster")
+
+
+
+print("    |", end="    ")
+input("Roll for first loot (enter)")
+loot_options, belt = function.collect_loot(loot_options, belt)
+
+print("    |", end="    ")
+input("Roll for second loot (enter)")
+loot_options, belt = function.collect_loot(loot_options, belt)
+
+belt.sort()
+print("    |    Your belt: ", belt)
+belt, health_points = function.use_loot(belt, health_points)
+
+print("    |", end="    ")
+input("Roll for Monster's Magic Power (Press enter)")
+power_roll = random.choice(list(monster_powers.keys()))
+m_combat_strength += min(6, m_combat_strength + monster_powers[power_roll])
+print(f"    |    The monster's combat strength is now {m_combat_strength} using {power_roll}")
+
+# ✅ Magical Ally Boost (untouched)
+allies = [
+    Ally("Fire Spirit", 3, 30),
+    Ally("Wind Archer", 2, 20),
+    Ally("Stone Golem", 1, 10)
+]
+eligible_allies = [a for a in allies if m_health_points > a.threshold]
+
+for ally in eligible_allies:
+    if m_combat_strength > 10:
+        if ally.name == "Fire Spirit":
+            print(f"🔥 {ally.name} launches a powerful double attack!")
+            m_health_points -= ally.boost * 2
+        else:
+            print(f"💨 {ally.name} strikes the monster!")
+            m_health_points -= ally.boost
+    else:
+        print(f"🪨 {ally.name} assists the hero.")
+        m_health_points -= ally.boost
+
+m_health_points = max(0, m_health_points)
+print(f"Monster's health after ally boost: {m_health_points}")
+
+# ✅ Presence of the King — only if ally boost ran
+if eligible_allies and combat_strength >= 8 and m_health_points > 0:
+    king_items = ["King’s Will", "Emperor's Cape"]
+    haki_items = [item for item in belt if item in king_items]
+
+    if haki_items:
+        function.show_presence_of_king_animation()
+
+        if m_combat_strength <= 3 or m_health_points <= 3:
+            print("💥 The monster collapses instantly from the King's pressure!")
+            m_health_points = 0
+        elif 4 <= m_combat_strength <= 6:
+            print("😨 The monster is weakened. Its strength is halved.")
+            m_combat_strength //= 2
+        else:
+            print("🧿 The monster resists the King's presence.")
+
+        belt.remove(haki_items[0])
+
+
+# FIGHT STARTS
+print("    ------------------------------------------------------------------")
+print("    |    You meet the monster. FIGHT!!")
+
 
     # Collect Loot First time
     loot_options, belt = function.collect_loot(loot_options, belt)
@@ -283,8 +364,40 @@ if not input_invalid:
             # Enter the shop with the current hero stats and location
             belt = shop.enter_shop(hero, current_location, belt, loot_value)
 
-    print("    ------------------------------------------------------------------")
+while m_health_points > 0 and health_points > 0:
     print("    |", end="    ")
+    input("Roll to see who strikes first (Press Enter)")
+    attack_roll = random.choice(small_dice_options)
+
+    if attack_roll % 2 != 0:
+        input("You strike (Press enter)")
+        m_health_points = function.hero_attacks(combat_strength, m_health_points)
+        if m_health_points == 0:
+            num_stars = 3
+            break
+        input("The monster strikes (Press enter)")
+        health_points = function.monster_attacks(m_combat_strength, health_points)
+    else:
+        input("The Monster strikes (Press enter)")
+        health_points = function.monster_attacks(m_combat_strength, health_points)
+        if health_points == 0:
+            num_stars = 1
+            break
+        input("The hero strikes!! (Press enter)")
+        m_health_points = function.hero_attacks(combat_strength, m_health_points)
+
+    if m_health_points > 0 and health_points > 0:
+        num_stars = 2
+
+winner = "Hero" if m_health_points <= 0 else "Monster"
+
+
+# Final Score
+tries = 0
+input_invalid = True
+while input_invalid and tries < 5:
+    print("    |", end="    ")
+
     input("Analyze the roll (Press enter)")
     # Compare Player vs Monster's strength
     print("    |    --- You are matched in strength: " + str(hero.combat_strength == monster.combat_strength))
@@ -387,33 +500,20 @@ if not input_invalid:
 
     if(monster.health_points <= 0):
         winner = "Hero"
+
+    hero_name = input("Enter your Hero's name (in two words): ")
+    name = hero_name.split()
+
+    if len(name) != 2 or not all(part.isalpha() for part in name):
+        print("    |    Invalid name. Use two alphabetic words.")
+        tries += 1
+
     else:
-        winner = "Monster"
+        short_name = name[0][:2] + name[1][0]
+        print("    |    I'm going to call you " + short_name + " for short")
+        input_invalid = False
 
-    # Final Score Display
-    tries = 0
-    input_invalid = True
-    while input_invalid and tries in range(5):
-        print("    |", end="    ")
-
-        hero_name = input("Enter your Hero's name (in two words)")
-        name = hero_name.split()
-        if len(name) != 2:
-            print("    |    Please enter a name with two parts (separated by a space)")
-            tries += 1
-        else:
-            if not name[0].isalpha() or not name[1].isalpha():
-                print("    |    Please enter an alphabetical name")
-                tries += 1
-            else:
-                short_name = name[0][0:2:1] + name[1][0:1:1]
-                print("    |    I'm going to call you " + short_name + " for short")
-                input_invalid = False
-
-    if not input_invalid:
-        stars_display = "*" * num_stars
-        print("    |    Hero " + short_name + " gets <" + stars_display + "> stars")
-
-        function.save_game(winner, hero_name=short_name, num_stars=num_stars)       
-
-
+if not input_invalid:
+    stars_display = "*" * num_stars
+    print("    |    Hero " + short_name + " gets <" + stars_display + "> stars")
+    function.save_game(winner, hero_name=short_name, num_stars=num_stars)
