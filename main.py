@@ -18,7 +18,7 @@ from dynamic_shop import DynamicItemShop
 from ally import Ally
 
 # Import from Dimension_travel class
-from Dimension_travel import DimensionTravel0
+from Dimension_travel import DimensionTravel
 
 
 
@@ -199,9 +199,13 @@ print(f"    |    The monster's combat strength is now {m_combat_strength} using 
 # 🌌 Dimension Travel Feature
 print("    ------------------------------------------------------------------")
 print("    |    The monster begins to glow with strange energy...")
+print("Dimension Travel section is running...")
+2
 print("    |    It activates... DIMENSION TRAVEL!")
 worlds = ["Fire Land", "Ice Land", "Gravity Land", "Time Land"]
-chosen_world = random.choice(worlds)
+chosen_world = "Fire Land"  # 👈 or "Ice Land" or any you want2
+
+
 
 # Use list comprehension to show teleport destination
 [print("    |    Monster is teleporting to:", world) for world in worlds if world == chosen_world]
