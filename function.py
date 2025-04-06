@@ -1,5 +1,9 @@
 # Import the random library to use for the dice later
 import random
+from taunt import MonsterTaunt
+
+# Initialize the taunt system
+taunt_system = MonsterTaunt()
 
 def use_loot(belt, health_points):
     good_loot_options = ["Health Potion", "Leather Boots"]
@@ -71,6 +75,13 @@ def hero_attacks(combat_strength, m_health_points):
     return m_health_points
 
 def monster_attacks(m_combat_strength, health_points):
+    # Using the taunt system with nested conditional statements
+    if m_combat_strength > 0 and health_points > 0:
+        # Get and display a random taunt before attacking
+        taunt = taunt_system.taunt_hero(m_combat_strength, health_points)
+        formatted_taunt = taunt_system.format_taunt(taunt)
+        print("    |    " + formatted_taunt)
+    
     ascii_image2 = """                                                                 
            @@@@ @                           
       (     @*&@  ,                         
