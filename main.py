@@ -18,7 +18,8 @@ from dynamic_shop import DynamicItemShop
 from ally import Ally
 
 # Import from Dimension_travel class
-from Dimension_travel import DimensionTravel
+from Dimension_travel import DimensionTravel0
+
 
 
 
