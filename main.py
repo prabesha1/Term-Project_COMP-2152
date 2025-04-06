@@ -17,6 +17,10 @@ from dynamic_shop import DynamicItemShop
 # Import Magical Ally class
 from ally import Ally
 
+# Import from Dimension_travel class
+from Dimension_travel import DimensionTravel
+
+
 
 # Print system information
 print(f"Operating System: {os.name}")
@@ -146,7 +150,7 @@ while input_invalid and i < 5:
     
     # Update monster's health points
     monster.health_points = m_health_points
-=======
+
     if 1 <= combat_strength <= 6 and 1 <= m_combat_strength <= 6:
         input_invalid = False
     else:
@@ -190,6 +194,37 @@ input("Roll for Monster's Magic Power (Press enter)")
 power_roll = random.choice(list(monster_powers.keys()))
 m_combat_strength += min(6, m_combat_strength + monster_powers[power_roll])
 print(f"    |    The monster's combat strength is now {m_combat_strength} using {power_roll}")
+
+# 🌌 Dimension Travel Feature
+print("    ------------------------------------------------------------------")
+print("    |    The monster begins to glow with strange energy...")
+print("    |    It activates... DIMENSION TRAVEL!")
+worlds = ["Fire Land", "Ice Land", "Gravity Land", "Time Land"]
+chosen_world = random.choice(worlds)
+
+# Use list comprehension to show teleport destination
+[print("    |    Monster is teleporting to:", world) for world in worlds if world == chosen_world]
+
+# Apply effects based on world
+if chosen_world == "Fire Land":
+    print("    |    🔥 The monster is empowered by fire!")
+    monster.combat_strength += 2
+
+elif chosen_world == "Ice Land":
+    print("    |    ❄️ Ice chills the battlefield! Both lose 2 health.")
+    hero.health_points -= 2
+    monster.health_points -= 2
+
+elif chosen_world == "Gravity Land":
+    print("    |    🌌 Gravity crushes all! Strengths decrease.")
+    hero.combat_strength -= 1
+    monster.combat_strength -= 1
+
+elif chosen_world == "Time Land":
+    print("    |    🕒 Time freezes... The fight ends in a draw.")
+    print("    |    Both combatants are teleported away.")
+    exit()
+
 
 # ✅ Magical Ally Boost (untouched)
 allies = [
@@ -240,10 +275,10 @@ print("    |    You meet the monster. FIGHT!!")
 
 
     # Collect Loot First time
-    loot_options, belt = function.collect_loot(loot_options, belt)
+loot_options, belt = function.collect_loot(loot_options, belt)
     # Add to hero's inventory
-    for item in belt:
-        if item not in hero.inventory:
+for item in belt:
+    if item not in hero.inventory:
             hero.add_to_inventory(item)
             
     print("    ------------------------------------------------------------------")
